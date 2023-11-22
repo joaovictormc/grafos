@@ -92,6 +92,11 @@ public class AlgoritmoCiclo {
     public boolean temCiclo() {
         return ciclo != null;
     }
+    
+    public static boolean temCiclo(Grafo G) {
+        AlgoritmoCiclo finder = new AlgoritmoCiclo(G);
+        return finder.temCiclo();
+    }
 
     /**
      * Retorna um ciclo no grafo G.

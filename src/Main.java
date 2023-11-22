@@ -3,7 +3,10 @@ import estrutura.Grafo;
 import estrutura.In;
 import algoritmo.AlgoritmoCiclo;
 import estrutura.Aresta;
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.util.List;
+import java.util.Scanner;
 import javafx.application.Application;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -14,6 +17,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Line;
 import javafx.scene.text.Text;
+import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
 public class Main extends Application {
@@ -24,10 +28,7 @@ public class Main extends Application {
     Button button = new Button("Executar");
 
     public static void main(String[] args) {
-        String arquivo = args[0].substring(9);
 
-        In in = new In(arquivo);
-        G = new Grafo(in);
         launch();
     }
 
@@ -45,13 +46,33 @@ public class Main extends Application {
         });
         componentes.getChildren().add(button);
         desenharGrafo(G);
+
+        Button botaoAbrirArquivo = new Button("Abrir arquivo");
+
+        // Vincula o botão à ação de abrir o arquivo
+        botaoAbrirArquivo.setOnAction(e -> {
+            // Abre o arquivo
+            FileChooser fileChooser = new FileChooser();
+            File arquivo = fileChooser.showOpenDialog(null);
+            if (arquivo == null) {
+                System.out.println("O usuário cancelou a caixa de diálogo.");
+                return;
+            }
+
+            // Faz alguma coisa com o arquivo
+            // ...
+        });
+
+        // Adiciona o botão à interface gráfica
+        componentes.getChildren().add(botaoAbrirArquivo);
+
         Scene cena = new Scene(componentes, 600, 550);
         palco.setTitle("IFES - SI - TPA - Trabalho: Ciclo em Grafos");
         palco.setScene(cena);
         palco.show();
     }
 
-    public void desenharGrafo(Grafo P) {
+    public void desenharGrafo(Grafo G) {
         // Cria o grupo de componentes
         Group componentes = new Group();
 
@@ -78,14 +99,37 @@ public class Main extends Application {
             line.setStroke(Color.BLACK);
             componentes.getChildren().add(line);
         }
-
-        
-        
-
-    
+    }
 
     public void desenharCiclo(Grafo G, List<Integer> cycle) {
-        // Adiciona os nós ao Group
+
+        AlgoritmoCiclo finder = new AlgoritmoCiclo(G);
+        boolean temCiclo = AlgoritmoCiclo.temCiclo(G);
+        if (temCiclo) {
+            // O grafo tem um ciclo
+
+            // Obtém a lista dos vértices do ciclo
+            Iterable<Integer> cicloList = finder.ciclo();
+
+            for (int v : cicloList) {
+                Circle circle = new Circle();
+                circle.setCenterX(G.getVizinhos(v).get(0) * 100);
+                circle.setCenterY(G.getVizinhos(v).get(1) * 100);
+                circle.setRadius(15.0f);
+                circle.setStroke(Color.BLACK);
+                circle.setFill(Color.WHITE);
+                componentes.getChildren().add(circle);
+            }
+        } else {
+            // O grafo não tem um ciclo
+
+            // Desenha o grafo sem o ciclo
+            desenharGrafo(G);
+        }
+
+    }
+
+    /*
         for (int v : cycle) {
             Circle circle = new Circle();
             circle.setCenterX(G.getVizinhos(v).get(0) * 100);
@@ -105,8 +149,5 @@ public class Main extends Application {
             line.setEndY(G.getVizinhos(cycle.get(i + 1)).get(1) * 100);
             line.setStrokeWidth(5);
             line.setStroke(Color.RED);
-            componentes.getChildren().add(line);
-        }
-    }
-
+            componentes.getChildren().add(line); }*/
 }
