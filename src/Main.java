@@ -2,11 +2,7 @@
 import estrutura.Grafo;
 import estrutura.In;
 import algoritmo.AlgoritmoCiclo;
-import estrutura.Aresta;
-import java.io.File;
-import java.io.FileNotFoundException;
 import java.util.List;
-import java.util.Scanner;
 import javafx.application.Application;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -17,7 +13,6 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Line;
 import javafx.scene.text.Text;
-import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
 public class Main extends Application {
@@ -34,6 +29,20 @@ public class Main extends Application {
 
     @Override
     public void start(Stage palco) throws Exception {
+        In in = new In("C:/Users/jvict/Documents/GitHub/grafos/_dados/Grafo3.txt");
+        Grafo G = new Grafo(in);
+        System.out.println(G);
+
+        AlgoritmoCiclo finder = new AlgoritmoCiclo(G);
+        if (finder.temCiclo()) {
+            System.out.print("Ciclo:");
+            for (int v : finder.ciclo()) {
+                System.out.print(" " + v);
+            }
+            System.out.println("");
+        } else {
+            System.out.println("Grafo é acíclico");
+        }
 
         //Adicionando a ação ao button
         button.setOnAction(new EventHandler<ActionEvent>() {
@@ -47,25 +56,6 @@ public class Main extends Application {
         componentes.getChildren().add(button);
         desenharGrafo(G);
 
-        Button botaoAbrirArquivo = new Button("Abrir arquivo");
-
-        // Vincula o botão à ação de abrir o arquivo
-        botaoAbrirArquivo.setOnAction(e -> {
-            // Abre o arquivo
-            FileChooser fileChooser = new FileChooser();
-            File arquivo = fileChooser.showOpenDialog(null);
-            if (arquivo == null) {
-                System.out.println("O usuário cancelou a caixa de diálogo.");
-                return;
-            }
-
-            // Faz alguma coisa com o arquivo
-            // ...
-        });
-
-        // Adiciona o botão à interface gráfica
-        componentes.getChildren().add(botaoAbrirArquivo);
-
         Scene cena = new Scene(componentes, 600, 550);
         palco.setTitle("IFES - SI - TPA - Trabalho: Ciclo em Grafos");
         palco.setScene(cena);
@@ -73,81 +63,47 @@ public class Main extends Application {
     }
 
     public void desenharGrafo(Grafo G) {
-        // Cria o grupo de componentes
-        Group componentes = new Group();
-
-        // Adiciona os vértices ao grupo
         for (int v = 0; v < G.V(); v++) {
-            Circle circle = new Circle();
-            circle.setCenterX(G.getVizinhos(v).get(0) * 50);
-            circle.setCenterY(G.getVizinhos(v).get(1) * 50);
-            circle.setRadius(15.0f);
-            circle.setStroke(Color.BLACK);
+            int[] pos = G.getCoordenadas(v);
+            Circle circle = new Circle(pos[0], pos[1], 15);
             circle.setFill(Color.WHITE);
-            Text text = new Text(circle.getCenterX() - 4, circle.getCenterY() + 4, Integer.toString(v));
-            componentes.getChildren().addAll(circle, text);
-        }
+            circle.setStroke(Color.BLACK);
+            componentes.getChildren().add(circle);
 
-        // Adiciona as arestas ao grupo
-        for (Aresta aresta : G.arestas()) {
-            Line line = new Line();
-            line.setStartX(G.getVizinhos(aresta.getV1()).get(0) * 50);
-            line.setStartY(G.getVizinhos(aresta.getV1()).get(1) * 50);
-            line.setEndX(G.getVizinhos(aresta.getV2()).get(0) * 50);
-            line.setEndY(G.getVizinhos(aresta.getV2()).get(1) * 50);
-            line.setStrokeWidth(2.0f);
-            line.setStroke(Color.BLACK);
-            componentes.getChildren().add(line);
+            // Adicione o número da aresta no círculo
+            Text text = new Text(pos[0] - 5, pos[1] + 5, String.valueOf(v));
+            componentes.getChildren().add(text);
+
+            for (int w : G.getVizinhos(v)) {
+                int[] posW = G.getCoordenadas(w);
+                Line line = new Line(pos[0], pos[1], posW[0], posW[1]);
+                line.setStroke(Color.BLACK);
+                componentes.getChildren().add(line);
+            }
         }
     }
 
     public void desenharCiclo(Grafo G, List<Integer> cycle) {
+        if (!cycle.isEmpty()) {
+            for (int i = 0; i < cycle.size(); i++) {
+                int v = cycle.get(i);
+                int w = cycle.get((i + 1) % cycle.size());
+                int[] posV = G.getCoordenadas(v);
+                int[] posW = G.getCoordenadas(w);
 
-        AlgoritmoCiclo finder = new AlgoritmoCiclo(G);
-        boolean temCiclo = AlgoritmoCiclo.temCiclo(G);
-        if (temCiclo) {
-            // O grafo tem um ciclo
+                Circle circleV = new Circle(posV[0], posV[1], 15, Color.RED);
+                componentes.getChildren().add(circleV);
 
-            // Obtém a lista dos vértices do ciclo
-            Iterable<Integer> cicloList = finder.ciclo();
+                // Adicione o número da aresta no círculo
+                Text text = new Text(posV[0] - 5, posV[1] + 5, String.valueOf(i));
+                componentes.getChildren().add(text);
 
-            for (int v : cicloList) {
-                Circle circle = new Circle();
-                circle.setCenterX(G.getVizinhos(v).get(0) * 100);
-                circle.setCenterY(G.getVizinhos(v).get(1) * 100);
-                circle.setRadius(15.0f);
-                circle.setStroke(Color.BLACK);
-                circle.setFill(Color.WHITE);
-                componentes.getChildren().add(circle);
+                Line line = new Line(posV[0], posV[1], posW[0], posW[1]);
+                line.setStrokeWidth(2.0f);
+                line.setStroke(Color.RED);
+                componentes.getChildren().add(line);
             }
-        } else {
-            // O grafo não tem um ciclo
-
-            // Desenha o grafo sem o ciclo
-            desenharGrafo(G);
         }
-
     }
 
-    /*
-        for (int v : cycle) {
-            Circle circle = new Circle();
-            circle.setCenterX(G.getVizinhos(v).get(0) * 100);
-            circle.setCenterY(G.getVizinhos(v).get(1) * 100);
-            circle.setRadius(15.0f);
-            circle.setStroke(Color.BLACK);
-            circle.setFill(Color.WHITE);
-            componentes.getChildren().add(circle);
-        }
-
-        // Adiciona as linhas ao Group
-        for (int i = 0; i < cycle.size() - 1; i++) {
-            Line line = new Line();
-            line.setStartX(G.getVizinhos(cycle.get(i)).get(0) * 100);
-            line.setStartY(G.getVizinhos(cycle.get(i)).get(1) * 100);
-            line.setEndX(G.getVizinhos(cycle.get(i + 1)).get(0) * 100);
-            line.setEndY(G.getVizinhos(cycle.get(i + 1)).get(1) * 100);
-            line.setStrokeWidth(5);
-            line.setStroke(Color.RED);
-            componentes.getChildren().add(line); }*/
 }

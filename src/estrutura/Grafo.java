@@ -1,35 +1,22 @@
 package estrutura;
 
-/*******************************************************************************
- *  Compilação:        javac Grafo.java
- *  Execução:          java Grafo dados.txt
- *  Dependências:      Aresta.java
- *  Arquivos de dados: Grafo1.txt
- *  Link dos dados:    https://drive.google.com/open?id=0B3q56TwNCeXoMlQ1c1dGOXJRbG8
+/**
+ * *****************************************************************************
+ * Compilação: javac Grafo.java Execução: java Grafo dados.txt Dependências:
+ * Aresta.java Arquivos de dados: Grafo1.txt Link dos dados:
+ * https://drive.google.com/open?id=0B3q56TwNCeXoMlQ1c1dGOXJRbG8
  *
- *  Um grafo de arestas, implementado utilizando listas de adjacências.
+ * Um grafo de arestas, implementado utilizando listas de adjacências.
  *
- *  % java Grafo Grafo1.txt
- *  13 13
- *  0: 6  2  1  5  
- *  1: 0  
- *  2: 0  
- *  3: 5  4  
- *  4: 5  6  3  
- *  5: 3  4  0  
- *  6: 0  4  
- *  7: 8  
- *  8: 7  
- *  9: 11  10  12  
- *  10: 9  
- *  11: 9  12  
- *  12: 11  9
+ * % java Grafo Grafo1.txt 13 13 0: 6 2 1 5 1: 0 2: 0 3: 5 4 4: 5 6 3 5: 3 4 0
+ * 6: 0 4 7: 8 8: 7 9: 11 10 12 10: 9 11: 9 12 12: 11 9
  *
- ******************************************************************************/
-
-
+ *****************************************************************************
+ */
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Esta classe implementa a representação do grafo com lista de adjacências.
@@ -45,9 +32,12 @@ public class Grafo {
     private int A;               // número de arestas no grafo
     private List<Aresta>[] adj;  // adj[v1] = lista de adjacência do vértice v1
 
+    private Map<Integer, int[]> coordenadas = new HashMap<>();
+
     /**
      * Inicializa um dígrafo com V vertices e 0 arestas.
-     * @param  V o número de vértices
+     *
+     * @param V o número de vértices
      * @throws IllegalArgumentException se V < 0
      */
     public Grafo(int V) {
@@ -62,13 +52,16 @@ public class Grafo {
         }
     }
 
-    /**  
-     * Inicializa um grafo à partir de um arquivo de dados.
-     * O formato é o número de vértices V e o número de arestas A
-     * seguido por pares de pares de vértices.
-     * @param  in o arquivo de entrada de dados
-     * @throws IndexOutOfBoundsException se os pontos finais de qualquer borda estão fora da área prescrita
-     * @throws IllegalArgumentException se o número de vértices ou arestas for negativo
+    /**
+     * Inicializa um grafo à partir de um arquivo de dados. O formato é o número
+     * de vértices V e o número de arestas A seguido por pares de pares de
+     * vértices.
+     *
+     * @param in o arquivo de entrada de dados
+     * @throws IndexOutOfBoundsException se os pontos finais de qualquer borda
+     * estão fora da área prescrita
+     * @throws IllegalArgumentException se o número de vértices ou arestas for
+     * negativo
      */
     public Grafo(In in) {
         this(in.readInt());
@@ -88,10 +81,9 @@ public class Grafo {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
-
-
     /**
      * Retorna o número de vértices do dígrafo.
+     *
      * @return o número de vértices do dígrafo
      */
     public int V() {
@@ -100,6 +92,7 @@ public class Grafo {
 
     /**
      * Retorna o número de arestas do dígrafo.
+     *
      * @return o número de arestas do dígrafo
      */
     public int A() {
@@ -108,17 +101,21 @@ public class Grafo {
 
     /**
      * Valida vértice do dígrafo.
+     *
      * @throws IndexOutOfBoundsException caso v não seja 0 <= v < V
      */
     private void validaVertice(int v) {
-        if (v < 0 || v >= V)
-            throw new IndexOutOfBoundsException("vértice " + v + " não está entre 0 e " + (V-1));
+        if (v < 0 || v >= V) {
+            throw new IndexOutOfBoundsException("vértice " + v + " não está entre 0 e " + (V - 1));
+        }
     }
 
     /**
      * Adiciona aresta direcionada a no dígrafo.
-     * @param  a a aresta
-     * @throws IndexOutOfBoundsException caso extremidades não estejam entre 0 e V-1
+     *
+     * @param a a aresta
+     * @throws IndexOutOfBoundsException caso extremidades não estejam entre 0 e
+     * V-1
      */
     public void addAresta(Aresta a) {
         int v1 = a.umVertice();
@@ -133,7 +130,8 @@ public class Grafo {
 
     /**
      * Retorna as arestas incidentes no vértice v.
-     * @param  v o vértice
+     *
+     * @param v o vértice
      * @return as arestas incidentes no vértice v como um Iterable
      * @throws IndexOutOfBoundsException caso v não seja 0 <= v < V
      */
@@ -144,6 +142,7 @@ public class Grafo {
 
     /**
      * Retorna o grau do vértice v.
+     *
      * @param v o vértice
      * @return o grau do vértice v
      * @throws IndexOutOfBoundsException caso não seja 0 <= v < V
@@ -155,6 +154,7 @@ public class Grafo {
 
     /**
      * Retorna todas as arestas neste grafo.
+     *
      * @return todas as arestas neste grafo, como um Iterable
      */
     public List<Aresta> arestas() {
@@ -165,8 +165,7 @@ public class Grafo {
                 if (a.outroVertice(v) > v) {
                     lista.add(a);
                     lista.add(v, a);
-                }
-                else if (a.outroVertice(v) == v) {
+                } else if (a.outroVertice(v) == v) {
                     if (selfLoops % 2 == 0) {
                         lista.add(a);
                     }
@@ -176,13 +175,15 @@ public class Grafo {
         }
         return lista;
     }
-    
+
     /**
      * Verifica se existe uma aresta entre dois vértices específicos.
+     *
      * @param v1 o primeiro vértice
      * @param v2 o segundo vértice
      * @return true se existe uma aresta entre v1 e v2, false caso contrário
-     * @throws IndexOutOfBoundsException se v1 ou v2 estiverem fora do intervalo válido
+     * @throws IndexOutOfBoundsException se v1 ou v2 estiverem fora do intervalo
+     * válido
      */
     public boolean existeArestaEntre(int v1, int v2) {
         validaVertice(v1);
@@ -194,15 +195,15 @@ public class Grafo {
         }
         return false;
     }
-    
+
     // Obtenha a lista de todas as arestas únicas
     public List<Aresta> arestasUnicas() {
         List<Aresta> arestasUnicas = new ArrayList<>();
         for (Aresta aresta : this.arestas()) {
             boolean jaExiste = false;
             for (Aresta a : arestasUnicas) {
-                if ((a.getV1() == aresta.getV1() && a.getV2() == aresta.getV2()) ||
-                    (a.getV1() == aresta.getV2() && a.getV2() == aresta.getV1())) {
+                if ((a.getV1() == aresta.getV1() && a.getV2() == aresta.getV2())
+                        || (a.getV1() == aresta.getV2() && a.getV2() == aresta.getV1())) {
                     jaExiste = true;
                     break;
                 }
@@ -213,22 +214,22 @@ public class Grafo {
         }
         return arestasUnicas;
     }
-    
+
     public List<Aresta> arestasAdjacentes(Aresta aresta) {
         List<Aresta> arestasAdjacentes = new ArrayList<>();
         for (Aresta a : this.arestas()) {
-            if ((a.getV1() == aresta.getV1() && a.getV2() == aresta.getV2()) ||
-                (a.getV1() == aresta.getV2() && a.getV2() == aresta.getV1())) {
+            if ((a.getV1() == aresta.getV1() && a.getV2() == aresta.getV2())
+                    || (a.getV1() == aresta.getV2() && a.getV2() == aresta.getV1())) {
                 continue; // Ignora a própria aresta
             }
-            if (a.getV1() == aresta.getV1() || a.getV1() == aresta.getV2() ||
-                a.getV2() == aresta.getV1() || a.getV2() == aresta.getV2()) {
+            if (a.getV1() == aresta.getV1() || a.getV1() == aresta.getV2()
+                    || a.getV2() == aresta.getV1() || a.getV2() == aresta.getV2()) {
                 arestasAdjacentes.add(a);
             }
         }
         return arestasAdjacentes;
     }
-    
+
     public List<Integer> getVizinhos(int v) {
         List<Integer> vizinhos = new ArrayList<>();
         for (Aresta aresta : this.adj(v)) {
@@ -243,6 +244,7 @@ public class Grafo {
 
     /**
      * Retorna uma representação String deste grafo.
+     *
      * @return uma representação String deste grafo
      */
     public String toString() {
@@ -266,6 +268,25 @@ public class Grafo {
         Grafo G = new Grafo(in);
         System.out.println(G);
 
+    }
+
+    public void lerCoordenadas(In in) {
+        while (in.hasNextLine()) {
+            String linha = in.readLine();
+            if (!linha.trim().isEmpty()) {
+                String[] partes = linha.split("\\s+");
+                if (partes.length == 3) {
+                    int vertice = Integer.parseInt(partes[0]);
+                    int x = Integer.parseInt(partes[1]);
+                    int y = Integer.parseInt(partes[2]);
+                    coordenadas.put(vertice, new int[]{x, y});
+                }
+            }
+        }
+    }
+    
+    public int[] getCoordenadas(int vertice) {
+        return coordenadas.getOrDefault(vertice, new int[]{0, 0});
     }
 
 }
